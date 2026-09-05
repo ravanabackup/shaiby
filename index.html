@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>In Her Corner — A Cycle Companion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-1:#1b1220;
+    --bg-2:#241729;
+    --surface:#2c1e33;
+    --surface-soft:rgba(255,255,255,0.04);
+    --hairline:rgba(255,255,255,0.09);
+    --text-1:#f3e9ee;
+    --text-2:#c9b8c4;
+    --text-3:#9c8a97;
+
+    --menstrual:#c6577a;
+    --menstrual-soft:rgba(198,87,122,0.16);
+    --follicular:#d9ae60;
+    --follicular-soft:rgba(217,174,96,0.16);
+    --fertile:#5fac8d;
+    --fertile-soft:rgba(95,172,141,0.16);
+    --luteal:#8b7bb8;
+    --luteal-soft:rgba(139,123,184,0.16);
+    --pms:#d97b4f;
+    --pms-soft:rgba(217,123,79,0.16);
+
+    --phase-color: var(--luteal);
+    --phase-soft: var(--luteal-soft);
+
+    --serif:'Fraunces', serif;
+    --sans:'Inter', sans-serif;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: radial-gradient(ellipse 120% 80% at 50% -10%, #33202f 0%, var(--bg-1) 55%, var(--bg-2) 100%);
+    color:var(--text-1);
+    font-family:var(--sans);
+    min-height:100vh;
+    padding: 56px 20px 80px;
+    line-height:1.5;
+  }
+
+  .page{max-width:640px;margin:0 auto;}
+
+  /* ---------- Header ---------- */
+  header{text-align:center;margin-bottom:40px;}
+  header .kicker{
+    font-family:var(--sans);
+    font-size:13px;
+    color:var(--text-3);
+    letter-spacing:0.02em;
+    margin-bottom:10px;
+  }
+  header h1{
+    font-family:var(--serif);
+    font-weight:500;
+    font-style:italic;
+    font-size:clamp(32px,7vw,44px);
+    margin:0 0 12px;
+    color:var(--text-1);
+  }
+  header p{
+    font-size:15.5px;
+    color:var(--text-2);
+    max-width:420px;
+    margin:0 auto;
+  }
+
+  /* ---------- Wheel ---------- */
+  .wheel-wrap{
+    display:flex;
+    justify-content:center;
+    margin:44px 0 28px;
+  }
+  .wheel-outer{
+    position:relative;
+    width:280px;
+    height:280px;
+  }
+  .wheel-ring{
+    position:absolute;
+    inset:0;
+    border-radius:50%;
+    padding:16px;
+    transition: background 0.6s ease;
+  }
+  .wheel-ring .cut{
+    position:absolute;
+    inset:16px;
+    border-radius:50%;
+    background: radial-gradient(ellipse 120% 80% at 50% -10%, #2f1e2c 0%, var(--bg-1) 60%, var(--bg-2) 100%);
+  }
+  .wheel-center{
+    position:absolute;
+    inset:16px;
+    border-radius:50%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:10px;
+  }
+  .wheel-center .day-num{
+    font-family:var(--serif);
+    font-size:52px;
+    line-height:1;
+    color:var(--text-1);
+    font-weight:500;
+  }
+  .wheel-center .day-label{
+    font-size:12.5px;
+    color:var(--text-3);
+    margin-top:4px;
+  }
+  .wheel-center .phase-name{
+    margin-top:12px;
+    font-size:15px;
+    font-weight:600;
+    padding:5px 14px;
+    border-radius:20px;
+    background:var(--phase-soft);
+    color:var(--phase-color);
+    transition: all 0.4s ease;
+  }
+  .today-marker{
+    position:absolute;
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    background:#fff;
+    box-shadow:0 0 0 4px var(--bg-1), 0 0 14px 2px rgba(255,255,255,0.6);
+    transform:translate(-50%,-50%);
+    transition: left 0.4s ease, top 0.4s ease;
+  }
+  .day1-tick{
+    position:absolute;
+    top:-2px;
+    left:50%;
+    transform:translateX(-50%);
+    font-size:10.5px;
+    color:var(--text-3);
+    letter-spacing:0.02em;
+  }
+
+  /* ---------- Settings ---------- */
+  details.settings{
+    background:var(--surface-soft);
+    border:1px solid var(--hairline);
+    border-radius:14px;
+    padding:2px 18px;
+    margin-bottom:32px;
+  }
+  details.settings summary{
+    cursor:pointer;
+    padding:14px 0;
+    font-size:14px;
+    color:var(--text-2);
+    list-style:none;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  details.settings summary::-webkit-details-marker{display:none;}
+  details.settings summary .chev{
+    transition:transform 0.25s ease;
+    color:var(--text-3);
+  }
+  details.settings[open] summary .chev{transform:rotate(180deg);}
+  .settings-body{
+    padding:6px 0 20px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px;
+  }
+  .settings-body .field{grid-column:span 1;}
+  .settings-body .field.full{grid-column:span 2;}
+  .field label{
+    display:block;
+    font-size:12.5px;
+    color:var(--text-3);
+    margin-bottom:6px;
+  }
+  .field input{
+    width:100%;
+    background:var(--bg-1);
+    border:1px solid var(--hairline);
+    color:var(--text-1);
+    border-radius:8px;
+    padding:9px 10px;
+    font-family:var(--sans);
+    font-size:14px;
+  }
+  .field input:focus{
+    outline:2px solid var(--phase-color);
+    outline-offset:1px;
+  }
+  .settings-note{
+    grid-column:span 2;
+    font-size:12.5px;
+    color:var(--text-3);
+    padding-top:2px;
+  }
+
+  /* ---------- Stat row ---------- */
+  .stat-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+    margin-bottom:14px;
+  }
+  .stat{
+    background:var(--surface);
+    border:1px solid var(--hairline);
+    border-radius:16px;
+    padding:18px 18px 20px;
+  }
+  .stat .label{font-size:12.5px;color:var(--text-3);margin-bottom:8px;}
+  .stat .value{
+    font-family:var(--serif);
+    font-size:22px;
+    color:var(--text-1);
+    margin-bottom:3px;
+  }
+  .stat .sub{font-size:12.5px;color:var(--text-2);}
+
+  /* ---------- Spotlight ---------- */
+  .spotlight{
+    margin-top:30px;
+    border-radius:20px;
+    border:1px solid var(--hairline);
+    background:linear-gradient(180deg, var(--surface) 0%, var(--bg-2) 100%);
+    padding:26px 26px 8px;
+    border-left:4px solid var(--phase-color);
+    transition:border-color 0.4s ease;
+  }
+  .spotlight .eyebrow{
+    font-size:12.5px;
+    color:var(--phase-color);
+    font-weight:600;
+    margin-bottom:6px;
+    transition:color 0.4s ease;
+  }
+  .spotlight h2{
+    font-family:var(--serif);
+    font-weight:500;
+    font-size:26px;
+    margin:0 0 12px;
+  }
+  .spotlight .whats-happening{
+    font-size:14.5px;
+    color:var(--text-2);
+    margin-bottom:20px;
+  }
+  .spotlight .cols{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:22px;
+    padding-bottom:22px;
+  }
+  .spotlight .col h3{
+    font-size:12.5px;
+    color:var(--text-3);
+    margin:0 0 10px;
+    font-weight:600;
+  }
+  .spotlight .col ul{
+    margin:0;
+    padding:0;
+    list-style:none;
+  }
+  .spotlight .col li{
+    font-size:14px;
+    color:var(--text-1);
+    padding:7px 0 7px 20px;
+    position:relative;
+    border-top:1px solid var(--hairline);
+  }
+  .spotlight .col li:first-child{border-top:none;}
+  .spotlight .col.do li::before{
+    content:"";
+    position:absolute;
+    left:0;top:15px;
+    width:6px;height:6px;
+    border-radius:50%;
+    background:var(--phase-color);
+  }
+  .spotlight .col.avoid li::before{
+    content:"";
+    position:absolute;
+    left:1px;top:14px;
+    width:7px;height:1.5px;
+    background:var(--text-3);
+  }
+
+  /* ---------- Phase guide ---------- */
+  .guide-heading{
+    margin:44px 0 16px;
+    font-family:var(--serif);
+    font-size:20px;
+    font-weight:500;
+    color:var(--text-1);
+  }
+  .guide-heading span{color:var(--text-3);font-family:var(--sans);font-size:13px;display:block;margin-top:4px;font-weight:400;}
+
+  .phase-row{
+    display:flex;
+    gap:16px;
+    padding:18px 4px;
+    border-top:1px solid var(--hairline);
+  }
+  .phase-row:last-child{border-bottom:1px solid var(--hairline);}
+  .phase-row .bar{
+    width:3px;
+    border-radius:2px;
+    flex-shrink:0;
+  }
+  .phase-row .content{flex:1;}
+  .phase-row .top-line{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:6px;
+  }
+  .phase-row .name{
+    font-family:var(--serif);
+    font-size:17px;
+    font-weight:500;
+  }
+  .phase-row .range{
+    font-size:12px;
+    color:var(--text-3);
+    white-space:nowrap;
+  }
+  .phase-row .desc{
+    font-size:13.5px;
+    color:var(--text-2);
+  }
+  .phase-row.current{background:var(--surface-soft);border-radius:12px;margin:0 -12px;padding:18px 12px;}
+
+  /* ---------- Footer ---------- */
+  footer{
+    margin-top:48px;
+    padding-top:24px;
+    border-top:1px solid var(--hairline);
+    font-size:12.5px;
+    color:var(--text-3);
+  }
+  footer p{margin:0 0 10px;}
+
+  @media (max-width:480px){
+    .spotlight .cols{grid-template-columns:1fr;gap:10px;}
+    .stat-row{grid-template-columns:1fr;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important; animation:none !important;}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="kicker">A quiet guide, just for you</div>
+    <h1>In Her Corner</h1>
+    <p>Know where she is in her cycle, and know exactly how to show up — today, and every day this month.</p>
+  </header>
+
+  <div class="wheel-wrap">
+    <div class="wheel-outer">
+      <div class="wheel-ring" id="wheelRing">
+        <div class="cut"></div>
+      </div>
+      <div class="day1-tick">day 1</div>
+      <div class="today-marker" id="todayMarker"></div>
+      <div class="wheel-center">
+        <div class="day-num" id="dayNum">—</div>
+        <div class="day-label" id="dayLabel">of cycle</div>
+        <div class="phase-name" id="phaseName">—</div>
+      </div>
+    </div>
+  </div>
+
+  <details class="settings" id="settingsPanel">
+    <summary>Tune this to her actual cycle <span class="chev">⌄</span></summary>
+    <div class="settings-body">
+      <div class="field">
+        <label for="startDate">Last period started</label>
+        <input type="date" id="startDate" value="2026-08-29">
+      </div>
+      <div class="field">
+        <label for="cycleLen">Cycle length (days)</label>
+        <input type="number" id="cycleLen" value="28" min="18" max="45">
+      </div>
+      <div class="field">
+        <label for="periodLen">Period length (days)</label>
+        <input type="number" id="periodLen" value="5" min="2" max="10">
+      </div>
+      <div class="field">
+        <label for="lutealLen">Luteal phase (days)</label>
+        <input type="number" id="lutealLen" value="14" min="10" max="17">
+      </div>
+      <div class="settings-note">The luteal phase (ovulation → next period) is usually the most fixed part of a cycle at 12–14 days. If you know her average cycle length from tracking, enter it here — the more real data you use, the more accurate this gets. This is still an estimate, not a diagnosis.</div>
+    </div>
+  </details>
+
+  <div class="stat-row">
+    <div class="stat">
+      <div class="label">Next period</div>
+      <div class="value" id="nextPeriodValue">—</div>
+      <div class="sub" id="nextPeriodSub">—</div>
+    </div>
+    <div class="stat">
+      <div class="label">Fertile window</div>
+      <div class="value" id="fertileValue">—</div>
+      <div class="sub" id="fertileSub">—</div>
+    </div>
+  </div>
+
+  <div class="spotlight" id="spotlight">
+    <div class="eyebrow" id="spotEyebrow">TODAY</div>
+    <h2 id="spotTitle">—</h2>
+    <p class="whats-happening" id="spotDesc">—</p>
+    <div class="cols">
+      <div class="col do">
+        <h3>What she may need from you</h3>
+        <ul id="spotDo"></ul>
+      </div>
+      <div class="col avoid">
+        <h3>Best to avoid right now</h3>
+        <ul id="spotAvoid"></ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="guide-heading">The full month, at a glance <span>Five phases, and how they tend to feel from the outside</span></div>
+  <div id="guideList"></div>
+
+  <footer>
+    <p>Every cycle and every person is different — this is built from typical hormonal patterns, not from her actual biology, and it isn't medical advice. Cramps, mood, and energy can be affected by stress, health conditions, and plenty else this can't see.</p>
+    <p>The single best way to make this accurate: ask her when her period actually starts each month and update the date above. If anything feels off — very heavy bleeding, severe pain, or mood swings that feel bigger than a bad week — that's worth a doctor's visit, not just patience.</p>
+  </footer>
+
+</div>
+
+<script>
+  const PHASES = [
+    {
+      id:'menstrual',
+      name:'Menstruation',
+      color:'var(--menstrual)',
+      soft:'var(--menstrual-soft)',
+      short:'Her period',
+      desc:'Her body is shedding the uterine lining — cramps, fatigue, and low energy are common in the first day or two, easing as the days go on. Iron levels dip a little too, which can add to the tiredness.',
+      spotEyebrow:'HER PERIOD',
+      spotDesc:'She may be dealing with cramps, fatigue, and low motivation, especially early on. Some people feel completely fine; others need to slow down. Read her, don\'t assume.',
+      doList:[
+        'Have a heating pad or hot water bottle ready without being asked',
+        'Take chores off her plate for a day or two, quietly',
+        'Keep dark chocolate, tea, or her usual comfort snack stocked',
+        'Offer a low-key night in rather than a packed schedule',
+        'Ask if she wants company or space — both are normal'
+      ],
+      avoidList:[
+        'Booking demanding plans or big social events',
+        'Commenting on her energy level or need to rest',
+        'Bringing up heavy topics that can wait a few days'
+      ]
+    },
+    {
+      id:'follicular',
+      name:'Follicular phase',
+      color:'var(--follicular)',
+      soft:'var(--follicular-soft)',
+      short:'Energy rebuilding',
+      desc:'Estrogen is climbing. Energy, mood, and motivation tend to rise day by day — this is often when she feels sharpest and most sociable.',
+      spotEyebrow:'ENERGY ON THE RISE',
+      spotDesc:'She\'s likely feeling more upbeat, energetic, and open to new things as this phase goes on. This is often a genuinely good window for both of you.',
+      doList:[
+        'Suggest the plans you\'ve been holding onto — trips, dinners, projects',
+        'Match her energy — this is a good week for activity together',
+        'Bring up bigger decisions or conversations you\'ve been saving',
+        'Support new ideas or goals she brings up — she\'s primed for them'
+      ],
+      avoidList:[
+        'Holding her back if she wants to move fast on something',
+        'Assuming last week\'s low mood is still the baseline'
+      ]
+    },
+    {
+      id:'fertile',
+      name:'Ovulation & fertile window',
+      color:'var(--fertile)',
+      soft:'var(--fertile-soft)',
+      short:'Peak & fertile',
+      desc:'An egg is released around the middle of this window. Confidence, energy, and libido often peak here, and some women notice a brief twinge of one-sided pelvic pain on the day itself.',
+      spotEyebrow:'OVULATION WINDOW',
+      spotDesc:'This is typically her highest-energy, most confident stretch of the month, and it\'s also the window where conception is possible if that\'s relevant to you both.',
+      doList:[
+        'Plan something you\'ll both enjoy — she\'s likely to be all in',
+        'Be attentive; connection tends to land well right now',
+        'If you\'re trying to conceive, this is the window that matters most',
+        'If you\'re not, be deliberate about contraception this week'
+      ],
+      avoidList:[
+        'Assuming this energy is guaranteed — mild cramping or fatigue can still show up',
+        'Being careless about protection if avoiding pregnancy is the goal'
+      ]
+    },
+    {
+      id:'luteal',
+      name:'Early luteal phase',
+      color:'var(--luteal)',
+      soft:'var(--luteal-soft)',
+      short:'Steady & focused',
+      desc:'Progesterone rises after ovulation. Mood is usually calm and steady here, though energy can start to taper as the days pass.',
+      spotEyebrow:'STEADY STRETCH',
+      spotDesc:'Generally one of the more even-keeled parts of the cycle — a good stretch for routine, focus, and quieter time together.',
+      doList:[
+        'Keep things steady — this isn\'t a phase that needs special handling',
+        'Use this window for planning or errands that need a clear head',
+        'Stay observant for the shift into the week before her period'
+      ],
+      avoidList:[
+        'Reading too much into small mood dips — they\'re usually minor here'
+      ]
+    },
+    {
+      id:'pms',
+      name:'Late luteal (PMS window)',
+      color:'var(--pms)',
+      soft:'var(--pms-soft)',
+      short:'The week before',
+      desc:'In the final days before her period, estrogen and progesterone both drop sharply. This is when PMS symptoms are most common — irritability, sadness, anxiety, bloating, food cravings, and sensitivity to comments that wouldn\'t normally land hard.',
+      spotEyebrow:'THE WEEK BEFORE',
+      spotDesc:'This is often the hardest stretch for both of you. Feelings can run bigger and faster than usual, and it\'s rarely about you specifically — it\'s the hormone drop.',
+      doList:[
+        'Give patience a little extra room than you think you need to',
+        'Have her favorite snacks or comfort food on hand',
+        'Offer physical comfort — a hug, a hand on her back — without needing a reason',
+        'Ask directly: "Do you want to talk it through, or do you want space?"',
+        'Take more off her plate than usual, without making it a whole thing'
+      ],
+      avoidList:[
+        'Starting arguments or raising sensitive topics that can wait a week',
+        'Saying "are you PMSing?" — it dismisses whatever she\'s actually feeling',
+        'Taking irritability personally or matching her tone if it flares',
+        'Joking about her mood, even lightly'
+      ]
+    }
+  ];
+
+  function pad(n){ return n<10 ? '0'+n : ''+n; }
+  function fmtDate(d){
+    return d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+  }
+  function dayDiff(a,b){
+    const MS = 86400000;
+    const utcA = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
+    const utcB = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
+    return Math.round((utcB-utcA)/MS);
+  }
+  function addDays(d, n){
+    const r = new Date(d);
+    r.setDate(r.getDate()+n);
+    return r;
+  }
+  function mod(n,m){ return ((n%m)+m)%m; }
+
+  const els = {
+    startDate: document.getElementById('startDate'),
+    cycleLen: document.getElementById('cycleLen'),
+    periodLen: document.getElementById('periodLen'),
+    lutealLen: document.getElementById('lutealLen'),
+    dayNum: document.getElementById('dayNum'),
+    dayLabel: document.getElementById('dayLabel'),
+    phaseName: document.getElementById('phaseName'),
+    wheelRing: document.getElementById('wheelRing'),
+    todayMarker: document.getElementById('todayMarker'),
+    nextPeriodValue: document.getElementById('nextPeriodValue'),
+    nextPeriodSub: document.getElementById('nextPeriodSub'),
+    fertileValue: document.getElementById('fertileValue'),
+    fertileSub: document.getElementById('fertileSub'),
+    spotlight: document.getElementById('spotlight'),
+    spotEyebrow: document.getElementById('spotEyebrow'),
+    spotTitle: document.getElementById('spotTitle'),
+    spotDesc: document.getElementById('spotDesc'),
+    spotDo: document.getElementById('spotDo'),
+    spotAvoid: document.getElementById('spotAvoid'),
+    guideList: document.getElementById('guideList'),
+  };
+
+  function computeAndRender(){
+    const startVal = els.startDate.value;
+    if(!startVal) return;
+    const [y,m,d] = startVal.split('-').map(Number);
+    const periodStart = new Date(y, m-1, d);
+    const cycleLength = Math.max(18, Math.min(45, parseInt(els.cycleLen.value)||28));
+    const periodLength = Math.max(2, Math.min(10, parseInt(els.periodLen.value)||5));
+    const lutealLength = Math.max(10, Math.min(17, parseInt(els.lutealLen.value)||14));
+
+    const today = new Date();
+    today.setHours(0,0,0,0);
+
+    const diff = dayDiff(periodStart, today);
+    const cycleIndex = Math.floor(diff / cycleLength); // which cycle we're in (can be negative if today before start)
+    const cycleDay = mod(diff, cycleLength) + 1; // 1-indexed
+    const currentCycleStart = addDays(periodStart, cycleIndex*cycleLength);
+    const nextPeriodDate = addDays(currentCycleStart, cycleLength);
+
+    const ovulationDay = cycleLength - lutealLength + 1; // 1-indexed day of ovulation
+    const fertileStartDay = Math.max(1, ovulationDay - 5);
+    const fertileEndDay = Math.min(cycleLength, ovulationDay + 1);
+    const pmsStartDay = Math.max(fertileEndDay+1, cycleLength - 4);
+
+    let ovulationDate = addDays(currentCycleStart, ovulationDay-1);
+    let fertileStartDate = addDays(currentCycleStart, fertileStartDay-1);
+    let fertileEndDate = addDays(currentCycleStart, fertileEndDay-1);
+    if(fertileEndDate < today){
+      ovulationDate = addDays(ovulationDate, cycleLength);
+      fertileStartDate = addDays(fertileStartDate, cycleLength);
+      fertileEndDate = addDays(fertileEndDate, cycleLength);
+    }
+
+    let phaseId;
+    if(cycleDay <= periodLength) phaseId='menstrual';
+    else if(cycleDay < fertileStartDay) phaseId='follicular';
+    else if(cycleDay <= fertileEndDay) phaseId='fertile';
+    else if(cycleDay < pmsStartDay) phaseId='luteal';
+    else phaseId='pms';
+
+    const phase = PHASES.find(p=>p.id===phaseId);
+    document.documentElement.style.setProperty('--phase-color', phase.color);
+    document.documentElement.style.setProperty('--phase-soft', phase.soft);
+
+    els.dayNum.textContent = cycleDay;
+    els.dayLabel.textContent = 'of ' + cycleLength + '-day cycle';
+    els.phaseName.textContent = phase.short;
+
+    const daysUntilPeriod = dayDiff(today, nextPeriodDate);
+    els.nextPeriodValue.textContent = daysUntilPeriod<=0 ? 'Any day now' : (daysUntilPeriod===1 ? 'Tomorrow' : 'In ' + daysUntilPeriod + ' days');
+    els.nextPeriodSub.textContent = fmtDate(nextPeriodDate);
+
+    const daysUntilFertileStart = dayDiff(today, fertileStartDate);
+    if(today >= fertileStartDate && today <= fertileEndDate){
+      els.fertileValue.textContent = 'Happening now';
+    } else if(daysUntilFertileStart===1){
+      els.fertileValue.textContent = 'Starts tomorrow';
+    } else if(daysUntilFertileStart>0){
+      els.fertileValue.textContent = 'In ' + daysUntilFertileStart + ' days';
+    } else {
+      els.fertileValue.textContent = fmtDate(fertileStartDate);
+    }
+    els.fertileSub.textContent = fmtDate(fertileStartDate) + ' – ' + fmtDate(fertileEndDate);
+
+    // wheel arcs
+    const pMenEnd = (periodLength/cycleLength)*100;
+    const pFolEnd = ((fertileStartDay-1)/cycleLength)*100;
+    const pFerEnd = (fertileEndDay/cycleLength)*100;
+    const pLutEnd = ((pmsStartDay-1)/cycleLength)*100;
+    els.wheelRing.style.background =
+      'conic-gradient(from 0deg, ' +
+      'var(--menstrual) 0%, var(--menstrual) '+pMenEnd+'%, ' +
+      'var(--follicular) '+pMenEnd+'%, var(--follicular) '+pFolEnd+'%, ' +
+      'var(--fertile) '+pFolEnd+'%, var(--fertile) '+pFerEnd+'%, ' +
+      'var(--luteal) '+pFerEnd+'%, var(--luteal) '+pLutEnd+'%, ' +
+      'var(--pms) '+pLutEnd+'%, var(--pms) 100%)';
+
+    const angle = ((cycleDay-1)/cycleLength) * 2*Math.PI;
+    const r = 132;
+    const cx = 140, cy = 140;
+    const mx = cx + r*Math.sin(angle);
+    const my = cy - r*Math.cos(angle);
+    els.todayMarker.style.left = mx+'px';
+    els.todayMarker.style.top = my+'px';
+
+    // spotlight
+    els.spotEyebrow.textContent = phase.spotEyebrow;
+    els.spotTitle.textContent = phase.name;
+    els.spotDesc.textContent = phase.spotDesc;
+    els.spotDo.innerHTML = phase.doList.map(i=>'<li>'+i+'</li>').join('');
+    els.spotAvoid.innerHTML = phase.avoidList.map(i=>'<li>'+i+'</li>').join('');
+
+    // guide list
+    const ranges = {
+      menstrual: 'Day 1–'+periodLength,
+      follicular: 'Day '+(periodLength+1)+'–'+(fertileStartDay-1),
+      fertile: 'Day '+fertileStartDay+'–'+fertileEndDay,
+      luteal: 'Day '+(fertileEndDay+1)+'–'+(pmsStartDay-1),
+      pms: 'Day '+pmsStartDay+'–'+cycleLength
+    };
+    els.guideList.innerHTML = PHASES.map(p=>{
+      const isCurrent = p.id===phaseId;
+      return '<div class="phase-row'+(isCurrent?' current':'')+'">'+
+        '<div class="bar" style="background:'+p.color+'"></div>'+
+        '<div class="content">'+
+          '<div class="top-line"><span class="name">'+p.name+'</span><span class="range">'+ranges[p.id]+'</span></div>'+
+          '<div class="desc">'+p.desc+'</div>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+  }
+
+  [els.startDate, els.cycleLen, els.periodLen, els.lutealLen].forEach(el=>{
+    el.addEventListener('change', computeAndRender);
+    el.addEventListener('input', computeAndRender);
+  });
+
+  computeAndRender();
+</script>
+</body>
+</html>
